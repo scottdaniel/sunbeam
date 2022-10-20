@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# setup
+
 set -e
 
 STARTING_DIR=$(pwd)
@@ -115,10 +117,13 @@ function setup {
 	TEMPDIR=`mktemp -d`
     fi
     
-    verbose "\n\t${GREEN}Test directory${RESET}: ${TEMPDIR}"
+    verbose "\n\t${GREEN}Test directory${RESET}: ${TEMPDIR}\n"
 
     export PATH=$PATH:$HOME/miniconda3/bin
-    
+    # Allow conda [de]activate
+    CONDA_BASE=$(conda info --base) # see https://github.com/conda/conda/issues/7980
+    source $CONDA_BASE/etc/profile.d/conda.sh
+
     # Install Sunbeam (maybe)
     if [ "$USE_TMPENV" = true ]; then
 	SUNBEAM_ENV="sunbeam-`basename $TEMPDIR`"
@@ -128,7 +133,7 @@ function setup {
     verbose "\n\t${GREEN}Conda environment${RESET}: ${SUNBEAM_ENV}\n"
 
     # Activate Sunbeam
-    source activate $SUNBEAM_ENV
+    conda activate $SUNBEAM_ENV
 
     # Move extensions out of the way temporarily
     if [ -d $SBX_FP ]; then
@@ -136,6 +141,9 @@ function setup {
 	mv $SBX_FP $OLD_SBX_FP
     fi
     mkdir $SBX_FP
+
+    # Clear test_results file
+    echo "Test Results" > test_results
 }
     
 function cleanup {
@@ -156,7 +164,7 @@ function cleanup {
 	    [ -f "${LOGFILE}.out" ] && rm "${LOGFILE}.out"
 	fi
     fi
-    source deactivate
+    conda deactivate
     # Remove Sunbeam environment if created
     if [ "$INSTALL_SUNBEAM" = true ]; then
 	verbose "Deleting temporary Sunbeam environment ${SUNBEAM_ENV} \n"
@@ -185,11 +193,14 @@ function build_test_data {
     cp -r raw $TEMPDIR
     cp -r truncated_taxonomy $TEMPDIR
     cp -r sbx_test $STARTING_DIR/$SBX_FP/sbx_test
+    cp -r sbx_test_subdir $STARTING_DIR/$SBX_FP/sbx_test_subdir
+    cp -r sbx_test_smk $STARTING_DIR/$SBX_FP/sbx_test_smk
     cp seqid2taxid.map $TEMPDIR
 
     mkdir -p $TEMPDIR/hosts
     cp indexes/*.fasta $TEMPDIR/hosts
     python generate_dummy_data.py $TEMPDIR
+    python generate_dummy_data.py $TEMPDIR data_files_old_illumina /1 /2
     # Create a version of the config file customized for this tempdir
     sunbeam init \
 	    --force \
@@ -201,14 +212,14 @@ function build_test_data {
     
     # Build fake kraken data
     pushd $TEMPDIR
-    kraken-build --db mindb --add-to-library \
+    kraken2-build --db mindb --add-to-library \
 		 raw/GCF_Bfragilis_10k_genomic.fna
-    kraken-build --db mindb --add-to-library \
+    kraken2-build --db mindb --add-to-library \
 		 raw/GCF_Ecoli_10k_genomic.fna
     mv truncated_taxonomy mindb/taxonomy
     cp seqid2taxid.map mindb
-    kraken-build --db mindb --build --kmer-len 16 --minimizer-len 1
-    kraken-build --db mindb --clean
+    kraken2-build --db mindb --build --kmer-len 16 --minimizer-len 1 --minimizer-spaces 0
+    kraken2-build --db mindb --clean
 
     # Build fake blast database
     mkdir -p local/blast

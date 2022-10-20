@@ -6,8 +6,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: circleci/python:3.6
-      - image: circleci/python:3.5
+      - image: cimg/python:3.10
 
     steps:
       - checkout
@@ -15,20 +14,44 @@ jobs:
       # Download and cache dependencies
       - restore_cache:
           keys:
-          - v1-dependencies-{{ checksum "environment.yml" }}
+          - v3-dependencies-{{ .Branch }}-{{ checksum "environment.yml" }}
 
       - run:
           name: install
           command: |
-            bash install.sh -u lib -e sunbeam
+            bash install.sh -u lib -v
+          no_output_timeout: 20m
+
+      - run:
+          name: dump_env
+          command: |
+            bash .circleci/dump_conda_env.bash
 
       - run:
           name: run tests
           command: |
-            bash tests/run_tests.bash -e sunbeam
+            TAG=$(git describe --tag)
+            bash tests/run_tests.bash -e sunbeam${TAG:1}
+          no_output_timeout: 20m
 
       - save_cache:
           paths:
             - ~/miniconda3
-          key: v1-dependencies-{{ checksum "environment.yml" }}
-           
+          key: v3-dependencies-{{ .Branch }}-{{ checksum "environment.yml" }}
+
+workflows:
+  version: 2
+  weeklybuild:
+    triggers:
+      - schedule:
+          cron: "30 14 * * 3"
+          filters:
+            branches:
+              only:
+                - dev
+                - stable
+    jobs:
+      - build
+  default:
+    jobs:
+      - build

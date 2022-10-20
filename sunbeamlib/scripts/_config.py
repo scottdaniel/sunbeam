@@ -28,6 +28,7 @@ def main(argv):
 
     # 'update' subcommand
     update_desc_str = (
+        "Updates a config file to be compatible with the active version of sunbeam.\n"
         "Usage examples:\n"
         "1. To update a config file in place:\n"
         "    $ sunbeam config update -i my_config.yml\n"
@@ -47,6 +48,7 @@ def main(argv):
 
     # 'modify' subcommand
     modify_desc_str = (
+        "Modifies a config file with the specified changes."
         "Usage examples:\n"
         "1. To apply a set of defaults to an existing config file in place:\n"
         "    $ sunbeam config modify -i -f defaults.yml my_config.yml\n"
@@ -80,7 +82,6 @@ def update(args):
     old_config.get('all', {}).pop('version', None)
 
     new_config = config.new(
-        conda_fp = config._find_conda_fp(),
         project_fp = old_config.get('all', {}).get('version', ''),
         template = args.template)
 
