@@ -3,5 +3,6 @@ channels:
   - bioconda
   - conda-forge
 dependencies:
+  - python=3.10.6
   - bioconda::multiqc=1.12
   - conda-forge::pandas

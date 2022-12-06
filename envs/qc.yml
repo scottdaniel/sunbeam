@@ -4,6 +4,7 @@ channels:
   - eclarke
   - conda-forge
 dependencies:
+  - python=3.10.6
   - biopython
   - bwa
   - cutadapt

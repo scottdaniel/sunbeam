@@ -14,12 +14,14 @@ rule kraken2_classify_report:
         report = CLASSIFY_FP/'kraken'/'{sample}-taxa.tsv'
     params:
         db = Cfg['classify']['kraken_db_fp'],
-        paired_end = "--paired" if Cfg['all']['paired_end'] else ""
-    threads:
-        Cfg['classify']['threads']
+        paired_end = "--paired" if Cfg['all']['paired_end'] else "",
+        threads = Cfg['classify']['threads']
+    resources:
+        mem_mb = Cfg['classify']['mem_mb']
     shell:
         """
         kraken2 --gzip-compressed \
+                --threads {params.threads} \
                 --db {params.db} \
                 --report {output.report} \
                 {params.paired_end} {input} \

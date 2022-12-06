@@ -58,8 +58,8 @@ TARGET_ANNOTATE = expand(
 # ---- Reports
 TARGET_REPORT = [
     str(QC_FP/'reports'/'preprocess_summary.tsv'),
-    str(QC_FP/'reports'/'fastqc_quality.tsv'),
-    str(ASSEMBLY_FP/'contigs_coverage.txt'),
+    str(QC_FP/'reports'/'fastqc_quality.tsv')
+#    str(ASSEMBLY_FP/'contigs_coverage.txt'),
 ]
 
 # ---- All targets
@@ -67,8 +67,8 @@ TARGET_ALL = (
     TARGET_QC +
     TARGET_DECONTAM +
     TARGET_CLASSIFY +
-    TARGET_ASSEMBLY +
-    TARGET_ANNOTATE +
-    TARGET_REPORT +
-    TARGET_MAPPING
+#    TARGET_ASSEMBLY +
+#    TARGET_ANNOTATE +
+    TARGET_REPORT
+#    TARGET_MAPPING
 )
