@@ -101,7 +101,7 @@ Let's create a new Sunbeam project (we'll call it ``my_project``):
 
       .. code-block:: shell
 
-         pip install snakemake-executor-plugin-slurm
+         pip install sunbeamlib[slurm]  # or: pip install snakemake-executor-plugin-slurm
          sunbeam init my_project --data_fp /sequencing/project/reads --profile slurm
 
    .. tab:: Apptainer/Singularity

@@ -8,7 +8,7 @@ A collection of common questions, issues, or points of confusion.
 
 **I'm getting ``snakemake: error: argument --executor/-e: invalid choice: '_____' (choose from 'local', 'dryrun', 'touch')``. Why can't I use the ``--executor`` option?**
 
-You're using the exectuor option properly, it's just that you haven't installed the executor plugin. Use ``pip`` to install it and you should be good to go (e.g. for Slurm ``pip install snakemake-executor-plugin-slurm``).
+You're using the exectuor option properly, it's just that you haven't installed the executor plugin. Use ``pip`` to install it and you should be good to go (e.g. for Slurm ``pip install snakemake-executor-plugin-slurm``, or ``pip install sunbeamlib[slurm]`` if you're installing from source).
 
 **I'm trying to use singularity but it keeps failing and complaining about running out of space. I know I have plenty of open disk space. Why is it running out?**
 

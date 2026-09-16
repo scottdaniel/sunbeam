@@ -36,6 +36,9 @@ dev = [
   "snakefmt",
   "pytest",
 ]
+slurm = [
+  "snakemake-executor-plugin-slurm",
+]
 ai = [
   "langchain>=0.2,<2.0",
   "langgraph>=0.2,<2.0",
